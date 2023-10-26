@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Presentation</title>
+    <style>
+        .highlight {
+            background-color: yellow;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+</head>
+<body>
+    <h1>Data Presentation Page</h1>
+
+    <button onclick="showOriginalExchange()">Original Exchange</button>
+    <button onclick="showTopOfTheBook()">Top of the Book</button>
+
+    <div id="tableContainer"></div>
+
+    <script>
+        async function parseCSV(data, isTopOfTheBook) {
+            return new Promise((resolve, reject) => {
+                Papa.parse(data, {
+                    header: true,
+                    dynamicTyping: true,
+                    complete: (results) => {
+                        resolve({ data: results.data, isTopOfTheBook });
+                    },
+                    error: (error) => {
+                        reject(error);
+                    }
+                });
+            });
+        }
+
+        async function fetchAndDisplayCSV(filename, isTopOfTheBook) {
+            try {
+                const response = await fetch(D:\_repositories_pritika\placement project); 
+                const data = await response.text();
+                const parsedData = await parseCSV(data, isTopOfTheBook);
+                displayTable(parsedData);
+            } catch (error) {
+                console.error('CSV file request failed:', error);
+            }
+        }
+
+        function displayTable(parsedData) {
+            const { data, isTopOfTheBook } = parsedData;
+            var table = '<table>';
+            for (var i = 0; i < data.length; i++) {
+                table += '<tr>';
+                for (var key in data[i]) {
+                    if (isTopOfTheBook && i < 5) {
+                        table += '<td class="highlight">' + data[i][key] + '</td>';
+                    } else {
+                        table += '<td>' + data[i][key] + '</td>';
+                    }
+                }
+                table += '</tr>';
+            }
+            table += '</table';
+            document.getElementById('tableContainer').innerHTML = table;
+        }
+
+        async function showOriginalExchange() {
+            await fetchAndDisplayCSV('Source1.csv', false);
+            await fetchAndDisplayCSV('Source2.csv', false);
+            await fetchAndDisplayCSV('Source3.csv', false);
+            await fetchAndDisplayCSV('Source4.csv', false);
+            await fetchAndDisplayCSV('Source5.csv', false);
+        }
+
+        async function showTopOfTheBook() {
+            await fetchAndDisplayCSV('merged_data_with_profit.csv', true);
+        }
+    </script>
+</body>
+</html>
