@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Presentation</title>
+    <style>
+        .highlight {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <h1>Data Presentation Page</h1>
+
+    <button onclick="showOriginalExchange()">Original Exchange</button>
+    <button onclick="showTopOfTheBook()">Top of the Book</button>
+
+    <div id="tableContainer"></div>
+
+    <script>
+        function fetchDataFromAPI(callback) {
+            fetch('http://127.0.0.1:5000')  // Use the actual route of your API endpoint
+                .then(response => response.json())
+                .then(data => {
+                    callback(data);
+                })
+                .catch(error => {
+                    console.error('API request failed:', error);
+                });
+        }
+
+        function displayTable(data) {
+            var table = '<table>';
+            for (var i = 0; i < data.length; i++) {
+                table += '<tr>';
+                for (var key in data[i]) {
+                    if (i < 5) {
+                        table += '<td class="highlight">' + data[i][key] + '</td>';
+                    } else {
+                        table += '<td>' + data[i][key] + '</td>';
+                    }
+                }
+                table += '</tr>';
+            }
+            table += '</table>';
+            document.getElementById('tableContainer').innerHTML = table;
+        }
+
+        function showOriginalExchange() {
+            fetchDataFromAPI(function (data) {
+                displayTable(data);
+            });
+        }
+
+        function showTopOfTheBook() {
+            fetchDataFromAPI(function (data) {
+                data = data.slice(0, 5);
+                displayTable(data);
+            });
+        }
+    </script>
+</body>
+</html>
+
